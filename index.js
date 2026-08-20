@@ -6,8 +6,7 @@ app.get("/*splat",(q,r)=>r.sendFile(path.join(__dirname,"../public/index.html"))
 const PORT = process.env.PORT || 10000;
 
 app.listen(PORT, "0.0.0.0", () => {
-  console.log(`KaamSetu running on port ${PORT}`);
-});
+
 app.post("/api/auth/signup",async(q,r)=>{let{name,email,password,role="both"}=q.body||{};if(!name||!email||!password||password.length<8)return r.status(400).json({error:"Name, email and password (8+ chars) required"});try{let h=await bcrypt.hash(password,12),x=db.prepare("INSERT INTO users(name,email,password_hash,role) VALUES(?,?,?,?)").run(name,email,h,role),u=db.prepare("SELECT id,name,email,role,is_admin FROM users WHERE id=?").get(x.lastInsertRowid);r.json({user:u,token:jwt.sign(u,secret,{expiresIn:"7d"})})}catch(e){r.status(409).json({error:"Email already registered"})}});
 app.post("/api/auth/login",async(q,r)=>{let{email,password}=q.body||{},u=db.prepare("SELECT * FROM users WHERE email=?").get(email);if(!u||!(await bcrypt.compare(password,u.password_hash)))return r.status(401).json({error:"Invalid credentials"});let user={id:u.id,name:u.name,email:u.email,role:u.role,is_admin:u.is_admin};r.json({user,token:jwt.sign(user,secret,{expiresIn:"7d"})})});
 app.get("/api/jobs",(q,r)=>r.json(db.prepare("SELECT j.*,u.name owner FROM jobs j JOIN users u ON u.id=j.owner_id WHERE j.status='open' ORDER BY j.id DESC").all()));
