@@ -12,3 +12,8 @@ app.post("/api/jobs/:id/payment/create",auth,(q,r)=>{let j=db.prepare("SELECT * 
 app.post("/api/jobs/:id/disputes",auth,(q,r)=>{let{reason}=q.body||{};if(!reason)return r.status(400).json({error:"Reason required"});let x=db.prepare("INSERT INTO disputes(job_id,opened_by,reason) VALUES(?,?,?)").run(q.params.id,q.user.id,reason);r.json({id:x.lastInsertRowid,status:"open"})});
 app.get("/api/admin/summary",auth,admin,(q,r)=>r.json({users:db.prepare("SELECT COUNT(*) n FROM users").get().n,jobs:db.prepare("SELECT COUNT(*) n FROM jobs").get().n,proposals:db.prepare("SELECT COUNT(*) n FROM proposals").get().n,transactions:db.prepare("SELECT COUNT(*) n FROM transactions").get().n,disputes:db.prepare("SELECT COUNT(*) n FROM disputes WHERE status='open'").get().n}));
 app.get("*",(q,r)=>r.sendFile(path.join(__dirname,"../public/index.html")));app.listen(process.env.PORT||3000,()=>console.log("KaamSetu running"));
+const PORT = process.env.PORT || 10000;
+
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server running on port ${PORT}`);
+});
