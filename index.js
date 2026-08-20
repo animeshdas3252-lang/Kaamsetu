@@ -17,3 +17,9 @@ const PORT = process.env.PORT || 10000;
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
 });
+app.get("*",(q,r)=>r.sendFile(path.join(__dirname,"../public/index.html")));app.listen(process.env.PORT||3000,()=>console.log("KaamSetu running"));
+const PORT = process.env.PORT || 10000;
+
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server running on port ${PORT}`);
+});
